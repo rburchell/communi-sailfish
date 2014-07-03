@@ -13,7 +13,9 @@ Item {
     ListView {
         model: StringFilterModel {
             // source: userModel // <- this works
-            sourceModel: userModel // <- this doesn't
+            // sourceModel: userModel // <- this doesn't (assert), despite the metatype being registered
+            // sourceModel: ListModel { // <- this doesn't work either, but crashes -- no assert
+            // }
         }
     }
 }
