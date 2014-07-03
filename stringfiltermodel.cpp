@@ -26,20 +26,30 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MESSAGEROLE_H
-#define MESSAGEROLE_H
+#include "stringfiltermodel.h"
 
-#include <Qt>
+StringFilterModel::StringFilterModel(QObject* parent) : QSortFilterProxyModel(parent)
+{
+    setFilterCaseSensitivity(Qt::CaseInsensitive);
+    setDynamicSortFilter(true);
+}
 
-enum MessageRole {
-    SeenRole = Qt::UserRole,
-    HighlightRole,
-    TimestampRole,
-    SenderRole,
-    EventRole,
-    DateRole,
-    TypeRole,
-    OwnRole
-};
+QString StringFilterModel::filter() const
+{
+    return filterRegExp().pattern();
+}
 
-#endif // MESSAGEROLE_H
+void StringFilterModel::setFilter(const QString& filter)
+{
+    setFilterWildcard("*" + filter + "*");
+}
+
+QObject* StringFilterModel::source() const
+{
+    return sourceModel();
+}
+
+void StringFilterModel::setSource(QObject* source)
+{
+    setSourceModel(qobject_cast<QAbstractItemModel*>(source));
+}

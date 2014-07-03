@@ -26,55 +26,25 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.1
-import Sailfish.Silica 1.0
+#ifndef STRINGFILTERMODEL_H
+#define STRINGFILTERMODEL_H
 
-QtObject {
-    id: scheduler
+#include <QSortFilterProxyModel>
 
-    function push(page, properties) {
-        __queue("push", page, properties)
-    }
+class StringFilterModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
+    Q_PROPERTY(QString filter READ filter WRITE setFilter)
+    Q_PROPERTY(QObject* source READ source WRITE setSource)
 
-    function replace(page, properties) {
-        __queue("replace", page, properties)
-    }
+public:
+    StringFilterModel(QObject* parent = 0);
 
-    function pop() {
-        __queue("pop")
-    }
+    QString filter() const;
+    void setFilter(const QString& filter);
 
-    function __queue(operation, page, properties) {
-        __operations.push(operation)
-        __pages.push(page)
-        __properties.push(properties)
-        timer.start()
-    }
+    QObject* source() const;
+    void setSource(QObject* source);
+};
 
-    function __operate(operation, page, properties) {
-        pageStack[operation](page, properties)
-    }
-
-    property var __operations: []
-    property var __pages: []
-    property var __properties: []
-
-    property Connections __connections: Connections {
-        target: pageStack
-        onBusyChanged: {
-            if (!pageStack.busy && __operations.length)
-                timer.start()
-        }
-    }
-
-    property Timer __timer: Timer {
-        id: timer
-        interval: 16
-        onTriggered: {
-            if (!pageStack.busy && __operations.length)
-                __operate(__operations.shift(), __pages.shift(), __properties.shift())
-            else
-                timer.start()
-        }
-    }
-}
+#endif // STRINGFILTERMODEL_H
